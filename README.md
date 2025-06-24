@@ -1,4 +1,17 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Tech stack: 
+
+Frontend: Next.JS
+
+auth: clerk
+
+STT: AssemblyAI
+(consider LiveKit for replacement)
+
+DB: Neon Postgres
+
+VAPI API: bring all AI models together
+
+Deploy: vercel
 
 ## Getting Started
 
