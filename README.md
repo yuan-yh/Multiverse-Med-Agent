@@ -15,6 +15,8 @@ VAPI API: bring all AI models together
 
 Deploy: vercel
 
+Workflow: [[app.eraser.io/workspace/1k0kiEHmWOKzsrlnRyaw]]
+
 ## Getting Started
 
 First, run the development server:
