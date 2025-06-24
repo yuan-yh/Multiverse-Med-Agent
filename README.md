@@ -10,6 +10,7 @@ STT: AssemblyAI
 (consider LiveKit for replacement)
 
 DB: Neon Postgres
+- Run locally: `npx drizzle-kit studio`
 
 VAPI API: bring all AI models together
 
