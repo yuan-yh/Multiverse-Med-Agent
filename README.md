@@ -2,6 +2,8 @@ Tech stack:
 
 Frontend: Next.JS
 
+UI: shadcn, Aceternity UI
+
 auth: clerk
 
 STT: AssemblyAI
