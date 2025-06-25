@@ -1,8 +1,9 @@
 'use client'
 import React from "react";
 import { motion } from "motion/react";
-import { SignIn, useUser } from '@clerk/nextjs'
-import Logo from '@/public/Seagull-by-Rones.svg';
+import { SignIn, UserButton, useUser } from '@clerk/nextjs'
+// import Logo from '@/public/Seagull-by-Rones.svg';
+import { FeatureBentoGrid } from "../_components/FeatureBentoGrid";
 
 export default function Home() {
   const { user } = useUser()
@@ -23,7 +24,7 @@ export default function Home() {
       </div>
       <div className="px-4 py-10 md:py-20">
         <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
-          {"Revolutionize Patient Care with AI Voice Agents"
+          {"🩺Revolutionize Patient Care with AI Voice Agents"
             .split(" ")
             .map((word, index) => (
               <motion.span
@@ -103,6 +104,7 @@ export default function Home() {
           </div>
         </motion.div>
       </div>
+      <FeatureBentoGrid />
     </div>
   );
 }
@@ -111,14 +113,10 @@ const Navbar = () => {
   return (
     <nav className="flex w-full items-center justify-between border-t border-b border-neutral-200 px-4 py-4 dark:border-neutral-800">
       <div className="flex items-center gap-2">
-        <div className="size-7 rounded-full bg-gradient-to-br from-violet-500 to-pink-500" />
-        {/* <img src={Logo} alt="Seagull Logo" className="h-6 w-auto" /> */}
-        <img src={Logo} alt="Seagull Logo" className="h-6 w-auto" />
+        <div className="size-7 rounded-full bg-gradient-to-br from-green-300 to-blue-700" />
         <h1 className="text-base font-bold md:text-2xl">Medi-Verse</h1>
       </div>
-      <button className="w-24 transform rounded-lg bg-black px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-800 md:w-32 dark:bg-white dark:text-black dark:hover:bg-gray-200">
-        Login
-      </button>
+      <UserButton />
     </nav>
   );
 };
