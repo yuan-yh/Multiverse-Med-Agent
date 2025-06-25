@@ -1,7 +1,14 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useUser } from '@clerk/nextjs';
+import { UserDetailContext } from '@/context/UserDetailContext';
+
+export type UsersDetail = {
+    name: string,
+    email: string,
+    credits: number,
+}
 
 export default function provider({
     children,
@@ -10,6 +17,8 @@ export default function provider({
 }>) {
     // fetch the user object based on the Clerk's authentication state
     const { user } = useUser();
+    // const [userDetail, setUserDetail] = useState<UsersDetail | undefined>();
+    const [userDetail, setUserDetail] = useState<any>();
 
     // execute when the user object changes
     useEffect(() => {
@@ -20,8 +29,13 @@ export default function provider({
     const CreateNewUser = async () => {
         const result = await axios.post('/api/users');
         console.log(result.data);
+        setUserDetail(result.data);
     }
     return (
-        <div>{children}</div>
+        <div>
+            <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+                {children}
+            </UserDetailContext.Provider>
+        </div>
     )
 }
