@@ -1,9 +1,12 @@
+// Define user-related API routes for POST request
+
 import { db } from "@/config/db";
 import { usersTable } from "@/config/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
+// Handle POST request sending from the client to /api/users
 export async function POST(req: NextRequest) {
     // fetch
     const user = await currentUser();

@@ -1,3 +1,5 @@
+// Share user information globally after the app starts
+
 'use client'
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
