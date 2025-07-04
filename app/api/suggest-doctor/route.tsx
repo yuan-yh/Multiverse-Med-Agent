@@ -13,8 +13,13 @@ export async function POST(req: NextRequest) {
                 { role: "user", content: "User Notes/Symptoms:" + note + ", Depend on user notes and symptoms, Please suggest list of doctors, Return Object in JSON only" }
             ],
         })
-        const rawResp = completion.choices[0].message
-        return NextResponse.json(rawResp);
+        const rawContent = completion.choices[0].message.content;
+        const Resp = rawContent?.trim().replace('```json', '').replace('```', '');
+
+        const parsed = JSON.parse(Resp || "[]");
+        const doctorList = parsed.map((item: any) => item.specialist);
+
+        return NextResponse.json(doctorList);
     }
     catch (e) {
         return NextResponse.json(e);
