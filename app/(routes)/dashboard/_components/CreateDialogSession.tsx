@@ -18,11 +18,14 @@ import axios from 'axios'
 
 function CreateDialogSession() {
     const [note, setNote] = useState<String>();
+    const [loading, setLoading] = useState(false);
     const handleNext = async () => {
+        setLoading(true);
         const result = await axios.post('/api/suggest-doctor', {
             note: note
         });
         console.log(result.data);
+        setLoading(false);
     };
 
     return (
