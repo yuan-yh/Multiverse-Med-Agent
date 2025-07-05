@@ -94,6 +94,7 @@ export function SuggestAgentCard({ agents }: Props) {
                                     <motion.a
                                         layoutId={`button-${active.specialist}-${id}`}
                                         target="_blank"
+                                        href="google.com"
                                         className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
                                     >
                                         Call
@@ -158,6 +159,7 @@ export function SuggestAgentCard({ agents }: Props) {
                         <motion.button
                             layoutId={`button-${card.specialist}-${id}`}
                             className="px-4 py-2 text-sm rounded-full font-bold bg-gray-100 hover:bg-green-500 hover:text-white text-black mt-4 md:mt-0"
+                            onClick={() => window.open("https://google.com", "_blank")}
                         >
                             Call
                         </motion.button>

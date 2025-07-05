@@ -34,6 +34,7 @@ function CreateDialogSession() {
 
             const result = await axios.post("/api/suggest-doctor", { note });
             const data = result.data;
+            console.log(data);
 
             // Check if it's an error
             if (Array.isArray(data)) {
@@ -89,26 +90,25 @@ function CreateDialogSession() {
                                 setErrorMsg(null);
                             }}
                         />
+                        {(errorMsg != null) && (<Alert variant="destructive">
+                            <AlertCircleIcon />
+                            <AlertTitle>Unable to process your Consultation.</AlertTitle>
+                            <AlertDescription>
+                                <p>Please verify your billing information and try again.</p>
+                                <ul className="list-inside list-disc text-sm">
+                                    <li>Deep Breath</li>
+                                    <li>Find a Seagull</li>
+                                    <li>Try Later</li>
+                                </ul>
+                            </AlertDescription>
+                        </Alert>)}
                     </div>
-
-                    {(errorMsg != null) && (<Alert variant="destructive">
-                        <AlertCircleIcon />
-                        <AlertTitle>Unable to process your Consultation.</AlertTitle>
-                        <AlertDescription>
-                            <p>Please verify your billing information and try again.</p>
-                            <ul className="list-inside list-disc text-sm">
-                                <li>Deep Breath</li>
-                                <li>Find A Seagull</li>
-                                <li>Try Later</li>
-                            </ul>
-                        </AlertDescription>
-                    </Alert>)}
 
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
-                        <Button disabled={!note || loading || (errorMsg != null)} onClick={handleDoctorSuggest}>
+                        <Button disabled={!note || loading} onClick={handleDoctorSuggest}>
                             Next
                             {loading ? <Loader2 className="animate-spin ml-2" /> : <IconArrowRight className="ml-2" />}
                         </Button>
