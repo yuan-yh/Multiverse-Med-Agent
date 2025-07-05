@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
     Dialog,
     DialogClose,
@@ -10,94 +10,137 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from '@/components/ui/button'
-import { Textarea } from "@/components/ui/textarea"
-import { IconArrowRight } from '@tabler/icons-react'
-import axios from 'axios'
-import MedicalAgentCard, { medicalAgent } from './MedicalAgentCard'
-import { Loader2 } from 'lucide-react'
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
+import axios from "axios";
+import { AlertCircleIcon, Loader2 } from "lucide-react";
+import { SuggestAgentCard } from "./SuggestAgentCard";
+import type { medicalAgent } from "./MedicalAgentCard";
 
 function CreateDialogSession() {
-    const [note, setNote] = useState<String>();
+    const [step, setStep] = useState<"input" | "suggest">("input");
+    const [note, setNote] = useState<string>("");
     const [loading, setLoading] = useState(false);
-    const [suggestedDoctorList, setSuggestedDoctorList] = useState<medicalAgent>();
+    const [suggestedDoctorList, setSuggestedDoctorList] = useState<medicalAgent[] | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const handleDoctorSuggest = async () => {
-        setLoading(true);
-        const result = await axios.post('/api/suggest-doctor', {
-            note: note
-        });
-        console.log(result.data);
-        setSuggestedDoctorList(result.data);
-        setLoading(false);
+        try {
+            setLoading(true);
+            setErrorMsg(null);
+
+            const result = await axios.post("/api/suggest-doctor", { note });
+            const data = result.data;
+
+            // Check if it's an error
+            if (Array.isArray(data)) {
+                setSuggestedDoctorList(data);
+                setStep("suggest");
+            } else if (data?.error?.message) {
+                setErrorMsg(data.error.message);
+            } else {
+                setErrorMsg("Unexpected response from the server.");
+            }
+        } catch (error: any) {
+            setErrorMsg("An error occurred. Please try again later.");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleCall = () => { };
+
+    const handleBack = () => {
+        setStep("input");
+        setSuggestedDoctorList(null); // Optional: clear results if needed
+    };
+
+    const handleCall = () => {
+        console.log("Start the call...");
+    };
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className='mt-3'>+ Start a Call</Button>
+                <Button className="mt-3">+ Start a Call</Button>
             </DialogTrigger>
-            {
-                !suggestedDoctorList
-                    ?
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Add Background Information</DialogTitle>
-                            <DialogDescription>
-                                How are you feeling today?
-                                Please share your symptoms here.
-                                Click save when you&apos;re done.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4">
-                            <Textarea
-                                placeholder='Write down symptoms here...'
-                                aria-label='Symptoms description'
-                                className='h-[150px] mt-1'
-                                onChange={(e) => setNote(e.target.value)}
-                            />
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button disabled={!note || loading} onClick={() => handleDoctorSuggest()}>
-                                Next
-                                {loading ? <Loader2 className='animate-spin' /> : <IconArrowRight />}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                    :
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Select Consultant</DialogTitle>
-                            <DialogDescription>
-                                How are you feeling today?
-                                Please share your symptoms here.
-                                Click save when you&apos;re done.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid grid-cols-2 gap-5">
-                            {/* <Textarea className='h-[150px] mt-1'/> */}
-                            {suggestedDoctorList.map((doctor, index) => (
-                                <MedicalAgentCard mAgent={doctor} key={index} />
-                            ))}
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button variant="outline">Cancel</Button>
-                            </DialogClose>
-                            <Button disabled={!note || loading} onClick={() => handleCall()}>
-                                Call
-                                {loading ? <Loader2 className='animate-spin' /> : <IconArrowRight />}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>}
+
+            {step === "input" && (
+                // <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[700px]">
+                    <DialogHeader>
+                        <DialogTitle>Add Background Information</DialogTitle>
+                        <DialogDescription>
+                            How are you feeling today? Please describe your symptoms.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="grid gap-4">
+                        <Textarea
+                            placeholder="Write down symptoms here..."
+                            aria-label="Symptoms description"
+                            className="h-[150px] mt-1"
+                            value={note}
+                            onChange={(e) => {
+                                setNote(e.target.value);
+                                setErrorMsg(null);
+                            }}
+                        />
+                    </div>
+
+                    {(errorMsg != null) && (<Alert variant="destructive">
+                        <AlertCircleIcon />
+                        <AlertTitle>Unable to process your Consultation.</AlertTitle>
+                        <AlertDescription>
+                            <p>Please verify your billing information and try again.</p>
+                            <ul className="list-inside list-disc text-sm">
+                                <li>Deep Breath</li>
+                                <li>Find A Seagull</li>
+                                <li>Try Later</li>
+                            </ul>
+                        </AlertDescription>
+                    </Alert>)}
+
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                        </DialogClose>
+                        <Button disabled={!note || loading || (errorMsg != null)} onClick={handleDoctorSuggest}>
+                            Next
+                            {loading ? <Loader2 className="animate-spin ml-2" /> : <IconArrowRight className="ml-2" />}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            )}
+
+            {step === "suggest" && suggestedDoctorList && (
+                <DialogContent className="sm:max-w-[700px]">
+                    <DialogHeader>
+                        <DialogTitle>Select Consultant</DialogTitle>
+                        <DialogDescription>
+                            Based on your symptoms, here are some suggested consultants.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <SuggestAgentCard agents={suggestedDoctorList} />
+
+                    <DialogFooter>
+                        <Button variant="outline" onClick={handleBack}>
+                            <IconArrowLeft className="mr-1" />
+                            Back
+                        </Button>
+                        <Button onClick={handleCall}>
+                            Call
+                            <IconArrowRight className="ml-2" />
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            )}
         </Dialog>
-    )
+    );
 }
 
-export default CreateDialogSession
+export default CreateDialogSession;
