@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { IconArrowRight } from '@tabler/icons-react'
 import React from 'react'
 
-type medicalAgent = {
+export type medicalAgent = {
     id: number,
     specialist: string,
     description: string,
@@ -25,7 +25,7 @@ function MedicalAgentCard({ mAgent }: props) {
                 className="w-full h-[250px] object-cover rounded-xl"
             />
 
-            <p className="font-bold text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200">
+            <p className="font-bold text-base sm:text-xl text-black mt-4 mb-2 dark:text-neutral-200 line-clamp-2 h-[3rem]">
                 {mAgent.specialist}
             </p>
 
