@@ -1,5 +1,5 @@
 import { db } from "@/config/db";
-import { SessionChatTable } from "@/config/db/schema";
+import { sessionChatTable } from "@/config/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,8 +11,8 @@ export async function GET(req: NextRequest) {
     try {
         const result = await db
             .select()
-            .from(SessionChatTable)
-            .where(eq(SessionChatTable.sessionId, sessionId));
+            .from(sessionChatTable)
+            .where(eq(sessionChatTable.sessionId, sessionId));
 
         if (result.length === 0) {
             return NextResponse.json({ message: "Session not found" }, { status: 404 });

@@ -60,8 +60,19 @@ function CreateDialogSession() {
         setSuggestedDoctorList(null); // Optional: clear results if needed
     };
 
-    const handleCall = () => {
+    const handleCall = async () => {
+        setLoading(true);
         console.log("Start the call...");
+        const result = await axios.post('api/session-chat', {
+            notes: note,
+            selectedDoctor: selectedDoctor,
+        })
+
+        console.log(result.data);
+        if (result.data?.sessionId) {
+            console.log(result.data.sessionId);
+        }
+        setLoading(false);
     };
 
     return (
@@ -137,9 +148,9 @@ function CreateDialogSession() {
                             <IconArrowLeft className="mr-1" />
                             Back
                         </Button>
-                        <Button onClick={handleCall}>
+                        <Button disabled={loading} onClick={handleCall}>
                             Call
-                            <IconArrowRight className="ml-2" />
+                            {loading ? <Loader2 className="animate-spin ml-2" /> : <IconArrowRight className="ml-2" />}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
