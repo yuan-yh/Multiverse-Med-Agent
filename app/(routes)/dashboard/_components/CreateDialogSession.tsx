@@ -26,6 +26,7 @@ function CreateDialogSession() {
     const [loading, setLoading] = useState(false);
     const [suggestedDoctorList, setSuggestedDoctorList] = useState<medicalAgent[] | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [selectedDoctor, setSelectedDoctor] = useState<medicalAgent>();
 
     const handleDoctorSuggest = async () => {
         try {
@@ -125,7 +126,11 @@ function CreateDialogSession() {
                         </DialogDescription>
                     </DialogHeader>
 
-                    <SuggestAgentCard agents={suggestedDoctorList} />
+                    <div className="grid grid-cols-3 gap-5">
+                        {suggestedDoctorList.map((doctor, index) => (
+                            <SuggestAgentCard agent={doctor} key={index} setSelectedDoctor={() => setSelectedDoctor(doctor)} />
+                        ))}
+                    </div>
 
                     <DialogFooter>
                         <Button variant="outline" onClick={handleBack}>
