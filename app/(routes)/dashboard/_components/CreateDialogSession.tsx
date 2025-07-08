@@ -19,6 +19,7 @@ import axios from "axios";
 import { AlertCircleIcon, Loader2 } from "lucide-react";
 import { SuggestAgentCard } from "./SuggestAgentCard";
 import type { medicalAgent } from "./MedicalAgentCard";
+import { useRouter } from "next/navigation";
 
 function CreateDialogSession() {
     const [step, setStep] = useState<"input" | "suggest">("input");
@@ -27,6 +28,7 @@ function CreateDialogSession() {
     const [suggestedDoctorList, setSuggestedDoctorList] = useState<medicalAgent[] | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [selectedDoctor, setSelectedDoctor] = useState<medicalAgent>();
+    const router = useRouter();
 
     const handleDoctorSuggest = async () => {
         try {
@@ -63,7 +65,7 @@ function CreateDialogSession() {
     const handleCall = async () => {
         setLoading(true);
         console.log("Start the call...");
-        const result = await axios.post('api/session-chat', {
+        const result = await axios.post('/api/session-chat', {
             notes: note,
             selectedDoctor: selectedDoctor,
         })
@@ -71,6 +73,7 @@ function CreateDialogSession() {
         console.log(result.data);
         if (result.data?.sessionId) {
             console.log(result.data.sessionId);
+            router.push(`/dashboard/medical-agent/${result.data.sessionId}`);
         }
         setLoading(false);
     };
@@ -139,7 +142,8 @@ function CreateDialogSession() {
 
                     <div className="grid grid-cols-3 gap-5">
                         {suggestedDoctorList.map((doctor, index) => (
-                            <SuggestAgentCard agent={doctor} key={index} setSelectedDoctor={() => setSelectedDoctor(doctor)} />
+                            //@ts-ignore
+                            <SuggestAgentCard agent={doctor} key={index} selectedDoctor={selectedDoctor} setSelectedDoctor={() => setSelectedDoctor(doctor)} />
                         ))}
                     </div>
 
@@ -148,7 +152,7 @@ function CreateDialogSession() {
                             <IconArrowLeft className="mr-1" />
                             Back
                         </Button>
-                        <Button disabled={loading} onClick={handleCall}>
+                        <Button disabled={loading || !selectedDoctor} onClick={handleCall}>
                             Call
                             {loading ? <Loader2 className="animate-spin ml-2" /> : <IconArrowRight className="ml-2" />}
                         </Button>

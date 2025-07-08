@@ -9,11 +9,12 @@ import { medicalAgent } from "./MedicalAgentCard";
 type Props = {
     agent: medicalAgent,
     setSelectedDoctor: any,
+    selectedDoctor: medicalAgent,
 };
 
-export function SuggestAgentCard({ agent, setSelectedDoctor }: Props) {
+export function SuggestAgentCard({ agent, selectedDoctor, setSelectedDoctor }: Props) {
     return (
-        <div className="flex flex-col items-center justify-between border rounded-2xl shadow p-5 hover:border-blue-300 cursor-pointer"
+        <div className={`flex flex-col items-center justify-between border rounded-2xl shadow p-5 hover:border-blue-300 cursor-pointer ${selectedDoctor?.id == agent.id && 'bg-blue-100'}`}
             onClick={() => setSelectedDoctor(agent)}>
             <Image
                 src={agent.image}
