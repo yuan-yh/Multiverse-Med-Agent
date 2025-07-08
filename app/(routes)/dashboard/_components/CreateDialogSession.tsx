@@ -62,20 +62,51 @@ function CreateDialogSession() {
         setSuggestedDoctorList(null); // Optional: clear results if needed
     };
 
+    // const handleCall = async () => {
+    //     setLoading(true);
+    //     console.log("Start the call...");
+    //     const result = await axios.post('/api/session-chat', {
+    //         notes: note,
+    //         selectedDoctor: selectedDoctor,
+    //     })
+
+    //     console.log(result.data);
+    //     if (result.data?.sessionId) {
+    //         console.log(result.data.sessionId);
+    //         router.push(`/dashboard/medical-agent/${result.data.sessionId}`);
+    //     }
+    //     setLoading(false);
+    // };
     const handleCall = async () => {
         setLoading(true);
-        console.log("Start the call...");
-        const result = await axios.post('/api/session-chat', {
-            notes: note,
-            selectedDoctor: selectedDoctor,
-        })
+        try {
+            const result = await axios.post('/api/session-chat', {
+                notes: note,
+                selectedDoctor: selectedDoctor,
+            });
 
-        console.log(result.data);
-        if (result.data?.sessionId) {
-            console.log(result.data.sessionId);
-            router.push(`/dashboard/medical-agent/${result.data.sessionId}`);
+            console.log(result.data);
+            if (result.data?.sessionId) {
+                console.log(result.data.sessionId);
+                router.push(`/dashboard/medical-agent/${result.data.sessionId}`);
+            } else {
+                // Handle case where sessionId is missing in successful response
+                setErrorMsg("Failed to create session. No session ID received.");
+            }
+        } catch (error) {
+            console.error("Call failed:", error);
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 404) {
+                    setErrorMsg("Session endpoint not found. Please try again later.");
+                } else {
+                    setErrorMsg(error.response?.data?.message || "An error occurred during the call.");
+                }
+            } else {
+                setErrorMsg("An unexpected error occurred.");
+            }
+        } finally {
+            setLoading(false); // This will always run, regardless of success or failure
         }
-        setLoading(false);
     };
 
     return (
@@ -145,6 +176,16 @@ function CreateDialogSession() {
                             //@ts-ignore
                             <SuggestAgentCard agent={doctor} key={index} selectedDoctor={selectedDoctor} setSelectedDoctor={() => setSelectedDoctor(doctor)} />
                         ))}
+                    </div>
+
+                    <div>
+                        {(errorMsg != null) && (<Alert variant="destructive">
+                            <AlertCircleIcon />
+                            <AlertTitle>Unable to process your Consultation.</AlertTitle>
+                            <AlertDescription>
+                                <p>Please verify your SEAGULL information and try again.</p>
+                            </AlertDescription>
+                        </Alert>)}
                     </div>
 
                     <DialogFooter>
