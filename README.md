@@ -6,7 +6,9 @@ UI: shadcn, Aceternity UI
 
 auth: clerk
 
-STT: AssemblyAI
+Speech-to-Text -> LLM Model -> Text-to-Speect: VAPI.ai
+
+Speech-to-Text (live streaming): Assembly.AI
 (consider LiveKit for replacement)
 
 DB: Neon Postgres
