@@ -12,6 +12,7 @@ Speech-to-Text (live streaming): Assembly.AI
 (consider LiveKit for replacement)
 
 DB: Neon Postgres
+- Push change: `npx drizzle-kit push`
 - Run locally: `npx drizzle-kit studio`
 
 VAPI API: bring all AI models together
