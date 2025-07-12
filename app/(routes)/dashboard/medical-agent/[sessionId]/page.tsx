@@ -29,11 +29,9 @@ function MedicalVoiceAgent() {
     const [sessionDetail, setSessionDetail] = useState<sessionDetail>();
     const [callStarted, setCallStarted] = useState(false);
     const [vapiInstance, setVapiInstance] = useState<any>();
-    const [isConnected, setIsConnected] = useState(false);
     const [currentSpeakerRole, setCurrentSpeakerRole] = useState<string | null>();
-    const [liveTranscription, setLiveTranscription] = useState<string>();
+    const [liveTranscript, setLiveTranscript] = useState<string>();
     const [messages, setMessages] = useState<messages[]>([]);
-    const [isSpeaking, setIsSpeaking] = useState(false);
 
     useEffect(() => {
         sessionId && GetSessionDetails();
@@ -62,20 +60,20 @@ function MedicalVoiceAgent() {
         });
 
         vapi.on('message', (message) => {
-            if (message.type === 'liveTranscription') {
+            if (message.type === 'transcript') {
                 // setLiveTranscription(prev => [...prev, {
                 //     role: message.role,
                 //     text: message.liveTranscription
                 // }]);
-                const { role, transcriptionType, transcription } = message;
-                console.log(`${message.role}: ${message.transcription}`);
-                if (transcriptionType == 'partial') {
-                    setLiveTranscription(transcription);
+                const { role, transcriptType, transcript } = message;
+                console.log(`${message.role}: ${message.transcript}`);
+                if (transcriptType == 'partial') {
+                    setLiveTranscript(transcript);
                     setCurrentSpeakerRole(role);
-                } else if (transcriptionType == 'final') {
+                } else if (transcriptType == 'final') {
                     // final liveTranscription
-                    setMessages((prev: any) => [...prev, { role: role, text: transcription }]);
-                    setLiveTranscription("");
+                    setMessages((prev: any) => [...prev, { role: role, text: transcript }]);
+                    setLiveTranscript("");
                     setCurrentSpeakerRole(null);
                 }
             }
@@ -118,11 +116,11 @@ function MedicalVoiceAgent() {
                 <h2 className='mt-2 text-lg'>{sessionDetail?.selectedDoctor?.specialist}</h2>
                 <p className='text-sm text-gray-400'>AI Medical Voice Agent</p>
 
-                <div className='mt-32 overflow-y-auto flex flex-col items-center px-10 md:px-28 lg:px-52 xl:px-72'>
+                <div className='mt-12 overflow-y-auto flex flex-col items-center px-10 md:px-28 lg:px-52 xl:px-72'>
                     {messages?.slice(-4).map((msg: messages, index) => (
                         <h2 className='text-gray-400 p-2' key={index}>{msg.role} :{msg.text}</h2>
                     ))}
-                    {liveTranscription && liveTranscription?.length > 0 && <h2 className='text-lg'>{currentSpeakerRole} : {liveTranscription}</h2>}
+                    {liveTranscript && liveTranscript?.length > 0 && <h2 className='text-lg'>{currentSpeakerRole} : {liveTranscript}</h2>}
                 </div>
 
                 {!callStarted
