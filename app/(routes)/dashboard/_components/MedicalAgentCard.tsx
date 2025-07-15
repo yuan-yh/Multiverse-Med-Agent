@@ -8,7 +8,7 @@ export type medicalAgent = {
     description: string,
     image: string,
     agentPrompt: string,
-    voiceId: string,
+    voiceId?: string,
     subscriptionRequired: boolean
 }
 

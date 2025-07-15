@@ -6,9 +6,12 @@ import Vapi from '@vapi-ai/web';
 import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { medicalAgent } from '@/app/(routes)/dashboard/_components/MedicalAgentCard';
-import { Circle, PhoneCall, PhoneOff } from 'lucide-react';
+import { Circle, Languages, Loader, PhoneCall, PhoneOff } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import provider from '@/app/provider';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 type sessionDetail = {
     id: number,
@@ -16,7 +19,7 @@ type sessionDetail = {
     sessionId: string,
     report: JSON,
     selectedDoctor: medicalAgent,
-    createdOn: string
+    createdOn: string,
 }
 
 type messages = {
@@ -32,6 +35,8 @@ function MedicalVoiceAgent() {
     const [currentSpeakerRole, setCurrentSpeakerRole] = useState<string | null>();
     const [liveTranscript, setLiveTranscript] = useState<string>();
     const [messages, setMessages] = useState<messages[]>([]);
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         sessionId && GetSessionDetails();
@@ -47,7 +52,32 @@ function MedicalVoiceAgent() {
         const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
         setVapiInstance(vapi);
 
+        const VapiAgentConfig = {
+            name: 'AI Medical Doctor Voice Agent',
+            firstMessage: "Hi there, thank you for connecting. I am your AI Medical Assistant and I am here to help you. Can you please tell me full name and age?",
+            transcriber: {
+                provider: 'assembly-ai',
+                Language: 'en',
+            },
+            voice: {
+                provider: 'playht',
+                voiceId: sessionDetail?.selectedDoctor?.voiceId,
+            },
+            model: {
+                provider: 'openai',
+                model: 'gpt-4',
+                messages: [
+                    {
+                        role: 'system',
+                        content: sessionDetail?.selectedDoctor?.agentPrompt,
+                    }
+                ]
+            }
+        };
+
         // Start voice conversation
+        // // @ts-ignore
+        // vapi.start(VapiAgentConfig);
         vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
         // Listen for events
         vapi.on('call-start', () => {
@@ -88,21 +118,44 @@ function MedicalVoiceAgent() {
         });
     }
 
-    const endCall = () => {
+    const generateReport = async () => {
+        const result = await axios.post('/api/medical-report', {
+            messages: messages,
+            sessionDetail: sessionDetail,
+            sessionId: sessionId,
+        })
+
+        console.log(result.data);
+        return result.data;
+    };
+
+    const endCall = async () => {
         if (!vapiInstance) return;
 
+        setLoading(true);
         console.log('Ending call...');
         // End voice conversation
         vapiInstance.stop();
         // Optionally remove listeners for memory management
-        vapiInstance.off('call-start');
-        vapiInstance.off('call-end');
-        vapiInstance.off('message');
+        try {
+            vapiInstance.off?.('call-start');
+            vapiInstance.off?.('call-end');
+            vapiInstance.off?.('message');
+        } catch (err) {
+            console.warn('Could not remove listeners:', err);
+        }
 
         // Reset call state
         setCallStarted(false);
         setVapiInstance(null);
+
+        const result = await generateReport();
+        setLoading(false);
+
+        toast.success('Your report is generated!');
+        router.replace('/dashboard');
     };
+
 
     return (
         <div className='p-5 border rounded-3xl bg-secondary'>
@@ -127,7 +180,9 @@ function MedicalVoiceAgent() {
                     ?
                     <Button className='mt-20' onClick={startCall}><PhoneCall />Start Call</Button>
                     :
-                    <Button className='mt-20' variant={'destructive'} onClick={endCall}><PhoneOff />End Call</Button>
+                    <Button className='mt-20' variant={'destructive'} onClick={endCall} disabled={loading}>
+                        {loading ? <Loader className='animate-spin' /> : <PhoneOff />}End Call
+                    </Button>
                 }
             </div>}
         </div>
