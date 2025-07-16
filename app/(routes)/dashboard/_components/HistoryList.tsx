@@ -2,9 +2,16 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import CreateDialogSession from './CreateDialogSession';
+import axios from 'axios';
 
 function HistoryList() {
     const [historyList, setHistoryList] = useState([]);
+
+    const getHistoryList = async () => {
+        const result = await axios.get('/api/session-chat?sessionId=all');
+        console.log(result.data);
+        setHistoryList(result.data);
+    };
 
     return (
         <div className='mt-10'>

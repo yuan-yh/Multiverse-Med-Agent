@@ -50,14 +50,18 @@ export async function POST(req: NextRequest) {
         });
         const rawContent = completion.choices[0].message.content;
         const Resp = rawContent?.trim().replace('```json', '').replace('```', '');
-
-        const parsed = JSON.parse(Resp || "[]");
+        // @ts-ignore
+        const parsed = JSON.parse(Resp);
 
         // Save to DB
+        console.log("---DB ready to update---");
         const result = await db.update(sessionChatTable).set({
             report: parsed,
             conversation: messages,
         }).where(eq(sessionChatTable.sessionId, sessionId));
+        console.log("DB update result:", result);
+
+
         return NextResponse.json(parsed);
     } catch (e) {
         return NextResponse.json(e);
