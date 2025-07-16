@@ -1,7 +1,7 @@
 import { db } from "@/config/db";
 import { sessionChatTable } from "@/config/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from 'uuid'
 
@@ -31,16 +31,32 @@ export async function GET(req: NextRequest) {
     const sessionId = searchParams.get('sessionId');
     const user = await currentUser();
     try {
-        const result = await db
-            .select()
-            .from(sessionChatTable)
-            .where(eq(sessionChatTable.sessionId, sessionId));
+        if (sessionId == 'all') {
+            const result = await db
+                .select()
+                .from(sessionChatTable)
+                .where(eq(sessionChatTable.createdBy, user?.primaryEmailAddress?.emailAddress))
+                .orderBy(desc(sessionChatTable.id));
 
-        if (result.length === 0) {
-            return NextResponse.json({ message: "Session not found" }, { status: 404 });
+            if (result.length === 0) {
+                return NextResponse.json({ message: "Session not found" }, { status: 404 });
+            }
+
+            return NextResponse.json(result);
         }
+        else {
+            const result = await db
+                .select()
+                .from(sessionChatTable)
+                .where(eq(sessionChatTable.sessionId, sessionId));
 
-        return NextResponse.json(result[0]);
+
+            if (result.length === 0) {
+                return NextResponse.json({ message: "Session not found" }, { status: 404 });
+            }
+
+            return NextResponse.json(result[0]);
+        }
     } catch (error) {
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }

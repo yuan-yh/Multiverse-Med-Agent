@@ -13,7 +13,7 @@ import provider from '@/app/provider';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-type sessionDetail = {
+export type sessionDetail = {
     id: number,
     notes: string,
     sessionId: string,
