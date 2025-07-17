@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Dialog,
     DialogClose,
@@ -20,6 +20,8 @@ import { AlertCircleIcon, Loader2 } from "lucide-react";
 import { SuggestAgentCard } from "./SuggestAgentCard";
 import type { medicalAgent } from "./MedicalAgentCard";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { sessionDetail } from "../medical-agent/[sessionId]/page";
 
 function CreateDialogSession() {
     const [step, setStep] = useState<"input" | "suggest">("input");
@@ -29,6 +31,20 @@ function CreateDialogSession() {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [selectedDoctor, setSelectedDoctor] = useState<medicalAgent>();
     const router = useRouter();
+    const { has } = useAuth();
+    const premiumUser = has && has({ plan: 'pro' });
+    const [historyList, setHistoryList] = useState<sessionDetail[]>([]);
+
+    useEffect(() => {
+        getHistoryList();
+    }, []);
+
+    const getHistoryList = async () => {
+        // console.log('----get history----');
+        const result = await axios.get('/api/session-chat?sessionId=all');
+        // console.log(result.data);
+        setHistoryList(result.data);
+    };
 
     const handleDoctorSuggest = async () => {
         try {
@@ -112,7 +128,7 @@ function CreateDialogSession() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className="mt-3">+ Start a Call</Button>
+                <Button className="mt-3" disabled={!premiumUser && historyList?.length >= 1}>+ Start a Call</Button>
             </DialogTrigger>
 
             {step === "input" && (

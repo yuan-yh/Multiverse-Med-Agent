@@ -1,6 +1,13 @@
+'use client'
+
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@clerk/nextjs'
 import { IconArrowRight } from '@tabler/icons-react'
-import React from 'react'
+import axios from 'axios'
+import { Loader2Icon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 
 export type medicalAgent = {
     id: number,
@@ -17,8 +24,34 @@ type props = {
 }
 
 function MedicalAgentCard({ mAgent }: props) {
+    const { has } = useAuth();
+    const premiumUser = has && has({ plan: 'pro' });
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+
+    const handleCall = async () => {
+        setLoading(true);
+        try {
+            const result = await axios.post('/api/session-chat', {
+                notes: 'New Query',
+                selectedDoctor: mAgent,
+            });
+
+            console.log(result.data);
+            if (result.data?.sessionId) {
+                console.log(result.data.sessionId);
+                router.push(`/dashboard/medical-agent/${result.data.sessionId}`);
+            }
+        } catch (error) {
+            console.error("Call failed:", error);
+        } finally {
+            setLoading(false); // This will always run, regardless of success or failure
+        }
+    };
+
     return (
-        <div className="rounded-[22px] max-w-sm p-4 sm:p-10 bg-white dark:bg-zinc-900">
+        <div className="relative rounded-[22px] max-w-sm p-4 sm:p-10 bg-white dark:bg-zinc-900">
+            {mAgent.subscriptionRequired && <Badge className='absolute m-2 right-9'>Premium</Badge>}
             <img
                 src={mAgent.image}
                 alt={mAgent.specialist}
@@ -33,7 +66,9 @@ function MedicalAgentCard({ mAgent }: props) {
                 {mAgent.description}
             </p>
 
-            <Button className='w-full mt-2'>Start Call <IconArrowRight /> </Button>
+            <Button className='w-full mt-2' disabled={mAgent.subscriptionRequired && !premiumUser} onClick={handleCall}>
+                Start Call {loading ? <Loader2Icon className='animate-spin' /> : <IconArrowRight />}
+            </Button>
         </div>
     );
 }
