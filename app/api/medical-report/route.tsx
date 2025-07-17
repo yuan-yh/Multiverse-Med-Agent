@@ -52,12 +52,14 @@ export async function POST(req: NextRequest) {
         const Resp = rawContent?.trim().replace('```json', '').replace('```', '');
         // @ts-ignore
         const parsed = JSON.parse(Resp);
+        console.log("---AI Report Generation---");
 
         // Save to DB
         console.log("---DB ready to update---");
+        console.log(messages);
         const result = await db.update(sessionChatTable).set({
             report: parsed,
-            conversation: messages,
+            conversation: JSON.stringify(messages),
         }).where(eq(sessionChatTable.sessionId, sessionId));
         console.log("DB update result:", result);
 

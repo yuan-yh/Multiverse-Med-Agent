@@ -14,9 +14,9 @@ function HistoryList() {
     }, []);
 
     const getHistoryList = async () => {
-        console.log('----get history----');
+        // console.log('----get history----');
         const result = await axios.get('/api/session-chat?sessionId=all');
-        console.log(result.data);
+        // console.log(result.data);
         setHistoryList(result.data);
     };
 

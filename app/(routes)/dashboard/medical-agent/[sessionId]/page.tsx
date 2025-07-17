@@ -124,8 +124,8 @@ function MedicalVoiceAgent() {
             sessionDetail: sessionDetail,
             sessionId: sessionId,
         })
-
-        console.log(result.data);
+        // console.log('----generate report----');
+        // console.log(result.data);
         return result.data;
     };
 
