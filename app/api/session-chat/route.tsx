@@ -28,9 +28,13 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
-    const sessionId = searchParams.get('sessionId');
+    const sessionId = searchParams.get('sessionId') || '';
     const user = await currentUser();
     try {
+        if (!user?.primaryEmailAddress?.emailAddress) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         if (sessionId == 'all') {
             const result = await db
                 .select()
