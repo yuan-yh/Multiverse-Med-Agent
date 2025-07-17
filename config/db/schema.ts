@@ -18,4 +18,3 @@ export const sessionChatTable = pgTable("sessionChatTable", {
     createdBy: varchar().references(() => usersTable.email),
     createdOn: varchar(),
 });
-// 27:00 starts

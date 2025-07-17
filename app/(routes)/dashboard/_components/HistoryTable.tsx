@@ -36,7 +36,7 @@ function HistoryTable({ historyList }: Props) {
                             <TableCell>{record.notes}</TableCell>
                             <TableCell>{moment(new Date(record.createdOn)).fromNow()}</TableCell>
                             <TableCell className="text-right">
-                                <ViewReportDialog record={record} />
+                                <ViewReportDialog record={record} key={index} />
                             </TableCell>
                         </TableRow>
                     ))}
