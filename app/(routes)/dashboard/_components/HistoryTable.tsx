@@ -31,12 +31,12 @@ function HistoryTable({ historyList }: Props) {
                 </TableHeader>
                 <TableBody>
                     {historyList.map((record: sessionDetail, index: number) => (
-                        <TableRow>
+                        <TableRow key={index}>
                             <TableCell className="font-medium">{record.selectedDoctor.specialist}</TableCell>
                             <TableCell>{record.notes}</TableCell>
                             <TableCell>{moment(new Date(record.createdOn)).fromNow()}</TableCell>
                             <TableCell className="text-right">
-                                <ViewReportDialog record={record} key={index} />
+                                <ViewReportDialog record={record} />
                             </TableCell>
                         </TableRow>
                     ))}

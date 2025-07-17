@@ -38,6 +38,7 @@ Depends on doctor AI agent info and Conversation between AI medical agents and u
 
 export async function POST(req: NextRequest) {
     const { sessionId, sessionDetail, messages } = await req.json();
+    console.log("---API AI Report Generation---");
 
     try {
         const UserInput = "AI Doctor Agent Info: " + JSON.stringify(sessionDetail) + ", Conversation: " + JSON.stringify(messages);

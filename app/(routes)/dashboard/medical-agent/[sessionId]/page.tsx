@@ -119,13 +119,18 @@ function MedicalVoiceAgent() {
     }
 
     const generateReport = async () => {
+        console.log('----before generate report----');
+        console.log(messages);
+        console.log(sessionDetail);
+        console.log(sessionId);
+        console.log('----ready generate report----');
         const result = await axios.post('/api/medical-report', {
             messages: messages,
             sessionDetail: sessionDetail,
             sessionId: sessionId,
         })
-        // console.log('----generate report----');
-        // console.log(result.data);
+        console.log('----generate report----');
+        console.log(result.data);
         return result.data;
     };
 
