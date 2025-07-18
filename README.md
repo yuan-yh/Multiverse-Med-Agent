@@ -1,24 +1,3 @@
-Tech stack: 
-Frontend: Next.JS
-
-UI: shadcn, Aceternity UI
-
-auth: clerk
-
-Speech-to-Text -> LLM Model -> Text-to-Speect: VAPI.ai
-
-Speech-to-Text (live streaming): Assembly.AI
-(consider LiveKit for replacement)
-
-DB: Neon Postgres
-- Push change: `npx drizzle-kit push`
-- Run locally: `npx drizzle-kit studio`
-
-VAPI API: bring all AI models together
-
-Deploy: vercel
-
-
 # 🩺 Multi-Agent Medical Voice Agent
 
 A fully-deployed, AI-powered voice assistant for healthcare consultation, which combines real-time speech recognition, intelligent medical dialogue, and secure user authentication in a clean, modern interface.
@@ -84,7 +63,12 @@ A fully-deployed, AI-powered voice assistant for healthcare consultation, which 
 git clone https://github.com/yuan-yh/Multiverse-Med-Agent.git
 cd Multiverse-Med-Agent
 
+# Run Project locally
 npm install
-
 npm run dev
+
+# Push DB schema change
+npx drizzle-kit push
+# Run DB locally
+npx drizzle-kit studio
 ```
