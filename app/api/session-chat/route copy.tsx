@@ -6,18 +6,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(req: NextRequest) {
-    const data = await req.json();
+    const { notes, selectedDoctor } = await req.json();
     const user = await currentUser();
 
     try {
         const sessionId = uuidv4();
         const result = await db.insert(sessionChatTable).values({
             sessionId: sessionId,
-            notes: data.notes,
-            selectedDoctor: data.selectedDoctor,
-            imageData: data.imageData,
-            imageFileName: data.imageFileName,
-            imageFileType: data.imageFileType,
+            notes: notes,
+            selectedDoctor: selectedDoctor,
             createdBy: user?.primaryEmailAddress?.emailAddress,
             createdOn: (new Date()).toString(),
             //@ts-ignore
