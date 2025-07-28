@@ -6,7 +6,7 @@ import Vapi from '@vapi-ai/web';
 import { useParams } from 'next/navigation'
 import React, { useEffect, useState, useRef } from 'react'
 import { medicalAgent } from '@/app/(routes)/dashboard/_components/MedicalAgentCard';
-import { Circle, Languages, Loader, Maximize2, PhoneCall, PhoneOff, X, Send, ZoomIn, ZoomOut, RotateCw } from 'lucide-react';
+import { Circle, Languages, Loader, Maximize2, PhoneCall, PhoneOff, X, Send } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,16 +54,7 @@ function MedicalVoiceAgent() {
     const [imageFullscreen, setImageFullscreen] = useState(false);
     const [textInput, setTextInput] = useState('');
     const [sendingText, setSendingText] = useState(false);
-    const [imageZoom, setImageZoom] = useState(1);
-    const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-    const [mainImageZoom, setMainImageZoom] = useState(1);
-    const [mainImagePosition, setMainImagePosition] = useState({ x: 0, y: 0 });
-    const [isMainDragging, setIsMainDragging] = useState(false);
-    const [mainDragStart, setMainDragStart] = useState({ x: 0, y: 0 });
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const imageRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -74,48 +65,6 @@ function MedicalVoiceAgent() {
         // Auto scroll to bottom when new messages arrive
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, liveTranscript]);
-
-    // Keyboard shortcuts for fullscreen image
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!imageFullscreen) return;
-
-            switch (e.key) {
-                case '+':
-                case '=':
-                    handleZoomIn();
-                    break;
-                case '-':
-                case '_':
-                    handleZoomOut();
-                    break;
-                case '0':
-                    handleResetZoom();
-                    break;
-                case 'ArrowUp':
-                    e.preventDefault();
-                    setImagePosition(prev => ({ ...prev, y: prev.y + 50 }));
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    setImagePosition(prev => ({ ...prev, y: prev.y - 50 }));
-                    break;
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    setImagePosition(prev => ({ ...prev, x: prev.x + 50 }));
-                    break;
-                case 'ArrowRight':
-                    e.preventDefault();
-                    setImagePosition(prev => ({ ...prev, x: prev.x - 50 }));
-                    break;
-            }
-        };
-
-        if (imageFullscreen) {
-            window.addEventListener('keydown', handleKeyDown);
-            return () => window.removeEventListener('keydown', handleKeyDown);
-        }
-    }, [imageFullscreen]);
 
     const GetSessionDetails = async () => {
         const result = await axios.get('/api/session-chat?sessionId=' + sessionId);
@@ -271,98 +220,6 @@ function MedicalVoiceAgent() {
         router.replace('/dashboard');
     };
 
-    // Zoom handlers
-    const handleZoomIn = () => {
-        setImageZoom(prev => Math.min(prev + 0.25, 3));
-    };
-
-    const handleZoomOut = () => {
-        setImageZoom(prev => Math.max(prev - 0.25, 0.5));
-    };
-
-    const handleResetZoom = () => {
-        setImageZoom(1);
-        setImagePosition({ x: 0, y: 0 });
-    };
-
-    const handleWheel = (e: React.WheelEvent) => {
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        setImageZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
-    };
-
-    const handleMouseDown = (e: React.MouseEvent) => {
-        if (imageZoom > 1) {
-            setIsDragging(true);
-            setDragStart({
-                x: e.clientX - imagePosition.x,
-                y: e.clientY - imagePosition.y
-            });
-        }
-    };
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (isDragging) {
-            setImagePosition({
-                x: e.clientX - dragStart.x,
-                y: e.clientY - dragStart.y
-            });
-        }
-    };
-
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    // Reset zoom when closing fullscreen
-    const handleCloseFullscreen = () => {
-        setImageFullscreen(false);
-        handleResetZoom();
-    };
-
-    // Main image zoom handlers
-    const handleMainZoomIn = () => {
-        setMainImageZoom(prev => Math.min(prev + 0.25, 3));
-    };
-
-    const handleMainZoomOut = () => {
-        setMainImageZoom(prev => Math.max(prev - 0.25, 0.5));
-    };
-
-    const handleMainResetZoom = () => {
-        setMainImageZoom(1);
-        setMainImagePosition({ x: 0, y: 0 });
-    };
-
-    const handleMainWheel = (e: React.WheelEvent) => {
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        setMainImageZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
-    };
-
-    const handleMainMouseDown = (e: React.MouseEvent) => {
-        if (mainImageZoom > 1) {
-            setIsMainDragging(true);
-            setMainDragStart({
-                x: e.clientX - mainImagePosition.x,
-                y: e.clientY - mainImagePosition.y
-            });
-        }
-    };
-
-    const handleMainMouseMove = (e: React.MouseEvent) => {
-        if (isMainDragging) {
-            setMainImagePosition({
-                x: e.clientX - mainDragStart.x,
-                y: e.clientY - mainDragStart.y
-            });
-        }
-    };
-
-    const handleMainMouseUp = () => {
-        setIsMainDragging(false);
-    };
-
     return (
         <div className='h-screen bg-gray-50'>
             {/* Header Bar */}
@@ -381,77 +238,17 @@ function MedicalVoiceAgent() {
             {/* Main Content */}
             <div className='flex h-[calc(100vh-73px)]'>
                 {/* Left Panel - Medical Image */}
-                <div className='w-2/5 border-r bg-white p-6 flex flex-col overflow-hidden'>
-                    <div className='flex-1 flex flex-col gap-4 min-h-0'>
+                <div className='w-2/5 border-r bg-white p-6 flex flex-col'>
+                    <div className='flex-1 flex flex-col space-y-6'>
                         {/* Medical Image Section */}
                         {sessionDetail?.imageData && (
-                            <div className='flex-1 flex flex-col min-h-0'>
-                                <div className='flex justify-between items-center mb-3'>
-                                    <h3 className='text-sm font-semibold text-gray-700 uppercase tracking-wider'>
-                                        Medical Imaging
-                                    </h3>
-                                    {/* Zoom controls for main view */}
-                                    <div className='flex gap-1'>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={handleMainZoomIn}
-                                            disabled={mainImageZoom >= 3}
-                                            className='h-7 w-7 p-0'
-                                        >
-                                            <ZoomIn className='h-3.5 w-3.5' />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={handleMainZoomOut}
-                                            disabled={mainImageZoom <= 0.5}
-                                            className='h-7 w-7 p-0'
-                                        >
-                                            <ZoomOut className='h-3.5 w-3.5' />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={handleMainResetZoom}
-                                            className='h-7 w-7 p-0'
-                                        >
-                                            <RotateCw className='h-3.5 w-3.5' />
-                                        </Button>
-                                        <span className='text-xs text-gray-500 px-2 flex items-center'>
-                                            {Math.round(mainImageZoom * 100)}%
-                                        </span>
-                                    </div>
-                                </div>
-                                <div
-                                    className='bg-gray-900 rounded-lg p-2 overflow-hidden flex-1 min-h-0'
-                                >
-                                    <div
-                                        className='w-full h-full flex items-center justify-center relative overflow-hidden rounded'
-                                        onWheel={handleMainWheel}
-                                        onMouseDown={handleMainMouseDown}
-                                        onMouseMove={handleMainMouseMove}
-                                        onMouseUp={handleMainMouseUp}
-                                        onMouseLeave={handleMainMouseUp}
-                                        style={{ cursor: mainImageZoom > 1 ? (isMainDragging ? 'grabbing' : 'grab') : 'pointer' }}
-                                    >
-                                        <img
-                                            src={`data:${sessionDetail.imageFileType};base64,${sessionDetail.imageData}`}
-                                            alt="Medical scan"
-                                            className='max-w-none select-none'
-                                            style={{
-                                                transform: `scale(${mainImageZoom}) translate(${mainImagePosition.x / mainImageZoom}px, ${mainImagePosition.y / mainImageZoom}px)`,
-                                                transition: isMainDragging ? 'none' : 'transform 0.2s ease-out',
-                                                maxHeight: mainImageZoom === 1 ? '100%' : 'none',
-                                                maxWidth: mainImageZoom === 1 ? '100%' : 'none',
-                                                height: mainImageZoom > 1 ? 'auto' : 'auto',
-                                                width: mainImageZoom > 1 ? 'auto' : 'auto'
-                                            }}
-                                            onClick={() => setImageFullscreen(true)}
-                                            draggable={false}
-                                        />
-                                    </div>
-                                </div>
+                            <div className='bg-gray-900 rounded-lg p-2'>
+                                <img
+                                    src={`data:${sessionDetail.imageFileType};base64,${sessionDetail.imageData}`}
+                                    alt="Medical scan"
+                                    className='w-full h-auto rounded cursor-pointer'
+                                    onClick={() => setImageFullscreen(true)}
+                                />
                                 <div className='mt-2 flex justify-between items-center'>
                                     <p className='text-xs text-gray-500'>{sessionDetail.imageFileName}</p>
                                     <button
@@ -460,21 +257,6 @@ function MedicalVoiceAgent() {
                                     >
                                         View Full Screen
                                     </button>
-                                </div>
-                                <p className='text-xs text-gray-400 text-center mt-1'>
-                                    Use scroll wheel to zoom • Click & drag to pan
-                                </p>
-                            </div>
-                        )}
-
-                        {/* Patient Notes */}
-                        {sessionDetail?.notes && (
-                            <div className='mt-4'>
-                                <h3 className='text-sm font-semibold text-gray-700 uppercase tracking-wider mb-2'>
-                                    Patient Background
-                                </h3>
-                                <div className='bg-blue-50 border border-blue-200 rounded-lg p-3 max-h-40 overflow-y-auto'>
-                                    <p className='text-sm text-gray-700'>{sessionDetail.notes}</p>
                                 </div>
                             </div>
                         )}
@@ -652,93 +434,24 @@ function MedicalVoiceAgent() {
             </div>
 
             {/* Fullscreen Image Dialog */}
-            <Dialog open={imageFullscreen} onOpenChange={handleCloseFullscreen}>
-                <DialogContent
-                    className='w-screen h-screen max-w-none p-0 bg-black rounded-none'
-                    style={{
-                        width: '100vw',
-                        height: '100vh',
-                        maxWidth: '100vw',
-                        maxHeight: '100vh',
-                        margin: 0,
-                        borderRadius: 0
-                    }}
-                >
-                    <div className='relative h-full flex flex-col'>
-                        {/* Zoom Controls */}
-                        <div className='absolute top-4 left-4 z-20 flex gap-2'>
-                            <Button
-                                variant="secondary"
-                                size="icon"
-                                className='bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm'
-                                onClick={handleZoomIn}
-                                disabled={imageZoom >= 3}
-                            >
-                                <ZoomIn className='h-4 w-4' />
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                size="icon"
-                                className='bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm'
-                                onClick={handleZoomOut}
-                                disabled={imageZoom <= 0.5}
-                            >
-                                <ZoomOut className='h-4 w-4' />
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                size="icon"
-                                className='bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm'
-                                onClick={handleResetZoom}
-                            >
-                                <RotateCw className='h-4 w-4' />
-                            </Button>
-                            <div className='px-3 py-2 bg-white/10 backdrop-blur-sm rounded-md text-white text-sm font-medium'>
-                                {Math.round(imageZoom * 100)}%
-                            </div>
-                        </div>
-
-                        {/* Close Button */}
+            <Dialog open={imageFullscreen} onOpenChange={setImageFullscreen}>
+                <DialogContent className='max-w-[95vw] max-h-[95vh] p-0 bg-black'>
+                    <div className='relative h-full flex items-center justify-center'>
                         <Button
                             variant="ghost"
                             size="icon"
                             className='absolute top-4 right-4 z-10 bg-white/10 hover:bg-white/20 text-white'
-                            onClick={handleCloseFullscreen}
+                            onClick={() => setImageFullscreen(false)}
                         >
                             <X className='h-5 w-5' />
                         </Button>
-
-                        {/* Image Container */}
-                        <div
-                            ref={imageRef}
-                            className='flex-1 overflow-hidden flex items-center justify-center p-8'
-                            onWheel={handleWheel}
-                            onMouseDown={handleMouseDown}
-                            onMouseMove={handleMouseMove}
-                            onMouseUp={handleMouseUp}
-                            onMouseLeave={handleMouseUp}
-                            style={{ cursor: imageZoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
-                        >
-                            {sessionDetail?.imageData && (
-                                <img
-                                    src={`data:${sessionDetail.imageFileType};base64,${sessionDetail.imageData}`}
-                                    alt="Medical scan"
-                                    className='max-w-none select-none'
-                                    style={{
-                                        transform: `scale(${imageZoom}) translate(${imagePosition.x / imageZoom}px, ${imagePosition.y / imageZoom}px)`,
-                                        transition: isDragging ? 'none' : 'transform 0.2s ease-out',
-                                        maxHeight: imageZoom === 1 ? 'calc(100vh - 100px)' : 'none',
-                                        maxWidth: imageZoom === 1 ? '100%' : 'none'
-                                    }}
-                                    draggable={false}
-                                />
-                            )}
-                        </div>
-
-                        {/* Instructions */}
-                        <div className='absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-lg text-white text-sm'>
-                            <p>Mouse wheel or +/- to zoom • Click & drag or arrow keys to pan • 0 to reset • ESC to close</p>
-                        </div>
+                        {sessionDetail?.imageData && (
+                            <img
+                                src={`data:${sessionDetail.imageFileType};base64,${sessionDetail.imageData}`}
+                                alt="Medical scan"
+                                className='max-w-full max-h-full object-contain'
+                            />
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>
