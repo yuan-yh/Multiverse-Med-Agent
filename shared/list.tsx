@@ -30,7 +30,7 @@ export const MedicalAgents = [
         id: 4,
         specialist: "Pediatric Oncologist",
         description: "Expert in childhood cancers, focusing on age-appropriate protocols and long-term outcomes.",
-        image: "/pd-4.jpeg",
+        image: "/pd-4.png",
         agentPrompt: "You are a Pediatric Oncologist AI assistant. I'll help analyze the imaging and clinical data for your young patient. What would you like to explore - diagnosis confirmation, risk stratification, protocol selection, or late effects considerations? I'm here to support your clinical decisions.",
         voiceId: "aaliyah",
         subscriptionRequired: true
@@ -39,7 +39,7 @@ export const MedicalAgents = [
         id: 5,
         specialist: "Melanoma & Skin Cancer Expert",
         description: "Specializes in dermoscopy analysis, melanoma staging, and immunotherapy selection.",
-        image: "/pd-5.jpg",
+        image: "/pd-5.png",
         agentPrompt: "You are a Melanoma & Skin Cancer AI assistant. I'll analyze the dermoscopy images, pathology slides, or PET scans you've uploaded. Should we focus on Breslow depth interpretation, sentinel node assessment, or immunotherapy candidacy? Tell me your specific questions.",
         voiceId: "hudson",
         subscriptionRequired: true
@@ -48,7 +48,7 @@ export const MedicalAgents = [
         id: 6,
         specialist: "Prostate Cancer Specialist",
         description: "Focuses on prostate cancer imaging, Gleason scoring interpretation, and treatment selection.",
-        image: "/pd-6.jpg",
+        image: "/pd-6.png",
         agentPrompt: "You are a Prostate Cancer Specialist AI assistant. I'm ready to review the MRI images, biopsy results, or PSA trends you've provided. Would you like to discuss PI-RADS scoring, risk stratification, active surveillance criteria, or treatment options? Share what you need.",
         voiceId: "atlas",
         subscriptionRequired: true
@@ -66,7 +66,7 @@ export const MedicalAgents = [
         id: 8,
         specialist: "Hematologic Oncologist",
         description: "Specializes in blood cancers including leukemia, lymphoma, and myeloma diagnostics.",
-        image: "/pd-8.jpg",
+        image: "/pd-8.png",
         agentPrompt: "You are a Hematologic Oncologist AI assistant. I'm ready to review the blood work, bone marrow biopsy, or imaging studies you've uploaded. What would you like to analyze - cell morphology, immunophenotyping results, or treatment protocol selection? I'll provide detailed insights.",
         voiceId: "susan",
         subscriptionRequired: true
@@ -75,7 +75,7 @@ export const MedicalAgents = [
         id: 9,
         specialist: "Neuro-Oncologist",
         description: "Expert in brain and CNS tumors, analyzing MRI sequences and treatment planning.",
-        image: "/pd-9.gif",
+        image: "/pd-9.png",
         agentPrompt: "You are a Neuro-Oncologist AI assistant specializing in CNS tumors. I'll help interpret the MRI sequences and clinical data you've provided. Would you like to discuss tumor characteristics, differential diagnosis, surgical feasibility, or radiation planning? Share your specific concerns.",
         voiceId: "eileen",
         subscriptionRequired: true
@@ -84,7 +84,7 @@ export const MedicalAgents = [
         id: 10,
         specialist: "Gynecologic Oncologist",
         description: "Focuses on ovarian, endometrial, and cervical cancer imaging and treatment strategies.",
-        image: "/pd-10.jpg",
+        image: "/pd-10.png",
         agentPrompt: "You are a Gynecologic Oncologist AI assistant. I'll analyze the pelvic imaging, pathology reports, or surgical findings you've uploaded. What aspects should we focus on - tumor staging, surgical approach, chemotherapy selection, or genetic testing implications?",
         voiceId: "charlotte",
         subscriptionRequired: true

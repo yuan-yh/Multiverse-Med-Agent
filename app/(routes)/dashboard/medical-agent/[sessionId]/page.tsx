@@ -123,6 +123,26 @@ function MedicalVoiceAgent() {
         setSessionDetail(result.data);
     }
 
+    const analyzeImageBeforeCall = async () => {
+        if (!sessionDetail?.imageData) return null;
+
+        try {
+            // Don't set loading here - it's handled in startCall
+            const analysisResult = await axios.post('/api/analyze-medical-image', {
+                imageData: sessionDetail.imageData,
+                imageType: sessionDetail.imageFileType,
+                patientNotes: sessionDetail.notes,
+                specialistType: sessionDetail.selectedDoctor.specialist
+            });
+
+            return analysisResult.data.analysis;
+        } catch (error) {
+            console.error('Error analyzing image:', error);
+            toast.error('Image analysis failed, but consultation can continue');
+            return null;
+        }
+    };
+
     const handleSendText = async () => {
         if (!textInput.trim() || !callStarted || sendingText) return;
 
@@ -162,73 +182,122 @@ function MedicalVoiceAgent() {
         }
     };
 
-    const startCall = () => {
-        const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
-        setVapiInstance(vapi);
+    const startCall = async () => {
+        try {
+            // Set loading for image analysis
+            setLoading(true);
 
-        const VapiAgentConfig = {
-            name: 'AI Medical Doctor Voice Agent',
-            firstMessage: "Hi there, thank you for connecting. I am your AI Medical Assistant and I am here to help you. Can you please tell me full name and age?",
-            transcriber: {
-                provider: 'assembly-ai',
-                Language: 'en',
-            },
-            voice: {
-                provider: 'playht',
-                voiceId: sessionDetail?.selectedDoctor?.voiceId,
-            },
-            model: {
-                provider: 'openai',
-                model: 'gpt-4',
-                messages: [
-                    {
-                        role: 'system',
-                        content: sessionDetail?.selectedDoctor?.agentPrompt,
-                    }
-                ]
-            }
-        };
+            // Analyze image first
+            const imageAnalysis = await analyzeImageBeforeCall();
 
-        // Start voice conversation
-        vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
+            const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
+            setVapiInstance(vapi);
 
-        // Listen for events
-        vapi.on('call-start', () => {
-            console.log('Call started');
-            setCallStarted(true);
-        });
-        vapi.on('call-end', () => {
-            console.log('Call ended');
-            setCallStarted(false);
-        });
+            const imageContext = sessionDetail?.imageData
+                ? `Medical image uploaded: ${sessionDetail.imageFileName} (${sessionDetail.imageFileType})`
+                : 'No medical image provided';
 
-        vapi.on('message', (message) => {
-            if (message.type === 'transcript') {
-                const { role, transcriptType, transcript } = message;
-                console.log(`${message.role}: ${message.transcript}`);
-                if (transcriptType == 'partial') {
-                    setLiveTranscript(transcript);
-                    setCurrentSpeakerRole(role);
-                } else if (transcriptType == 'final') {
-                    setMessages((prev: any) => [...prev, {
-                        role: role,
-                        text: transcript,
-                        inputType: 'voice'
-                    }]);
-                    setLiveTranscript("");
-                    setCurrentSpeakerRole(null);
+            const patientContext = sessionDetail?.notes
+                ? `Patient background: ${sessionDetail.notes}`
+                : 'No patient background provided';
+
+            const VapiAgentConfig = {
+                name: 'AI Medical Doctor Voice Agent',
+                firstMessage: imageAnalysis
+                    ? "Good day, Doctor. I've completed my initial analysis of the patient's imaging and identified several key findings. Would you like me to start with my observations on the most significant abnormalities, or would you prefer to guide the discussion?"
+                    : "Good day, Doctor. I'm ready to assist with the diagnostic evaluation. What aspects of the case would you like to discuss first?",
+                transcriber: {
+                    provider: 'assembly-ai',
+                    language: 'en', // Fixed: lowercase 'language'
+                },
+                voice: {
+                    provider: 'playht',
+                    voiceId: sessionDetail?.selectedDoctor?.voiceId,
+                },
+                model: {
+                    provider: 'openai',
+                    model: 'gpt-4',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: `${sessionDetail?.selectedDoctor?.agentPrompt}
+
+CONSULTATION CONTEXT:
+${imageContext}
+${patientContext}
+
+MEDICAL IMAGE ANALYSIS RESULTS:
+${imageAnalysis || 'Image analysis not available - proceed with clinical discussion based on doctor\'s observations.'}
+
+CONSULTATION GUIDELINES:
+1. You have already analyzed the medical image. Reference specific findings when relevant.
+2. Use precise medical terminology and anatomical descriptions.
+3. Suggest differential diagnoses based on imaging findings and clinical context.
+4. Recommend additional imaging or tests when appropriate.
+5. Maintain a collaborative tone - you're assisting, not replacing clinical judgment.
+6. If asked about specific image regions, provide detailed observations.
+7. Acknowledge limitations and suggest clinical correlation when needed.
+
+Remember: Address the doctor professionally and provide evidence-based insights.`
+                        }
+                    ]
                 }
-            }
-        });
-        vapi.on('speech-start', () => {
-            console.log('Assistant started speaking');
-            setCurrentSpeakerRole('assistant');
-        });
-        vapi.on('speech-end', () => {
-            console.log('Assistant stopped speaking');
-            setCurrentSpeakerRole('user');
-        });
-    }
+            };
+
+            // Use the config object if not using assistant ID
+            // vapi.start(VapiAgentConfig);
+
+            // Or use assistant ID as you have it
+            vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
+
+            // Event listeners remain the same...
+            vapi.on('call-start', () => {
+                console.log('Call started');
+                setCallStarted(true);
+            });
+
+            vapi.on('call-end', () => {
+                console.log('Call ended');
+                setCallStarted(false);
+            });
+
+            vapi.on('message', (message) => {
+                if (message.type === 'transcript') {
+                    const { role, transcriptType, transcript } = message;
+                    console.log(`${role}: ${transcript}`);
+                    if (transcriptType === 'partial') {
+                        setLiveTranscript(transcript);
+                        setCurrentSpeakerRole(role);
+                    } else if (transcriptType === 'final') {
+                        setMessages((prev: any) => [...prev, {
+                            role: role,
+                            text: transcript,
+                            inputType: 'voice'
+                        }]);
+                        setLiveTranscript("");
+                        setCurrentSpeakerRole(null);
+                    }
+                }
+            });
+
+            vapi.on('speech-start', () => {
+                console.log('Assistant started speaking');
+                setCurrentSpeakerRole('assistant');
+            });
+
+            vapi.on('speech-end', () => {
+                console.log('Assistant stopped speaking');
+                setCurrentSpeakerRole('user');
+            });
+
+        } catch (error) {
+            console.error('Error starting call:', error);
+            toast.error('Failed to start consultation');
+        } finally {
+            // Always reset loading state
+            setLoading(false);
+        }
+    };
 
     const generateReport = async () => {
         console.log('----before generate report----');

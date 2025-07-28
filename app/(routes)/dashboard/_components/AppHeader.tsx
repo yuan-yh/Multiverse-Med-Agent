@@ -37,7 +37,7 @@ function AppHeader() {
             {/* <Image src={'/Seagull-by-Rones.svg'} alt='logo' width={120} height={60} /> */}
             <div className='relative w-[120px] h-[60px]'>
                 <Image
-                    src={'/cute_plague_doctor.png'}
+                    src={'/icon.png'}
                     alt='logo'
                     fill
                     className='object-contain'
