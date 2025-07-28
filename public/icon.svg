@@ -1,11 +1,12 @@
-<svg width="80" height="80" viewBox="0 0 80 80" class="icon" id="icon3" xmlns="http://www.w3.org/2000/svg">
+<svg width="80" height="80" viewBox="0 0 80 80" class="icon" id="icon1" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
                                 <stop offset="0%" style="stop-color:#FF6B9D;stop-opacity:1"/>
-                                <stop offset="100%" style="stop-color:#da6586d1;stop-opacity:1"/>
+                                <stop offset="100%" style="stop-color:#C44569;stop-opacity:1"/>
                             </linearGradient>
                         </defs>
-                        <path d="M40 10 L60 20 L60 40 C60 55, 40 70, 40 70 C40 70, 20 55, 20 40 L20 20 Z" fill="url(#gradient3)" stroke="none"/>
+                        <circle cx="40" cy="40" r="38" fill="url(#gradient1)" opacity="0.1"/>
+                        <path d="M40 20 C32 12, 16 12, 16 28 C16 40, 40 60, 40 60 C40 60, 64 40, 64 28 C64 12, 48 12, 40 20 Z" fill="url(#gradient1)" stroke="none"/>
                         <circle cx="30" cy="30" r="3" fill="white" opacity="0.9"/>
                         <circle cx="50" cy="30" r="3" fill="white" opacity="0.9"/>
                         <circle cx="40" cy="40" r="3" fill="white" opacity="0.9"/>

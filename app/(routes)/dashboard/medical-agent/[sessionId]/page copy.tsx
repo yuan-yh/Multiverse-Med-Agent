@@ -150,7 +150,7 @@ function MedicalVoiceAgent() {
         setTextInput('');
         setSendingText(true);
 
-        // Add user message to transcript
+        // Add user message to transcript immediately
         setMessages(prev => [...prev, {
             role: 'user',
             text: userMessage,
@@ -158,21 +158,19 @@ function MedicalVoiceAgent() {
         }]);
 
         try {
-            // If Vapi supports sending text messages, use this:
             if (vapiInstance && vapiInstance.send) {
-                // Send text message through Vapi
+                console.log('Sending text message:', userMessage);
+
+                // FIXED: Use the correct format
                 vapiInstance.send({
-                    type: 'add-message',
-                    message: {
-                        role: 'user',
-                        content: userMessage
-                    }
+                    type: "say" as const,
+                    message: userMessage
                 });
+
+                console.log('Text message sent successfully');
             } else {
-                // Alternative: Make a direct API call to your backend
-                // This would require setting up an endpoint that communicates with your AI
-                console.log('Text message:', userMessage);
-                // Example: await axios.post('/api/send-message', { message: userMessage, sessionId });
+                console.error('Vapi instance not available');
+                toast.error('Voice assistant not connected');
             }
         } catch (error) {
             console.error('Error sending text message:', error);
@@ -182,52 +180,129 @@ function MedicalVoiceAgent() {
         }
     };
 
-    const startCall = () => {
-        const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
-        setVapiInstance(vapi);
+    const startCall = async () => {
+        try {
+            setLoading(true);
 
-        // Analyze image first
-        // const imageAnalysis = await analyzeImageBeforeCall();
-
-        // Start voice conversation
-        vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
-
-        // Listen for events
-        vapi.on('call-start', () => {
-            console.log('Call started');
-            setCallStarted(true);
-        });
-        vapi.on('call-end', () => {
-            console.log('Call ended');
-            setCallStarted(false);
-        });
-
-        vapi.on('message', (message) => {
-            if (message.type === 'transcript') {
-                const { role, transcriptType, transcript } = message;
-                console.log(`${message.role}: ${message.transcript}`);
-                if (transcriptType == 'partial') {
-                    setLiveTranscript(transcript);
-                    setCurrentSpeakerRole(role);
-                } else if (transcriptType == 'final') {
-                    setMessages((prev: any) => [...prev, {
-                        role: role,
-                        text: transcript,
-                        inputType: 'voice'
-                    }]);
-                    setLiveTranscript("");
-                    setCurrentSpeakerRole(null);
-                }
+            // Check microphone permissions first
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log('Microphone permission granted');
+            } catch (err) {
+                console.error('Microphone permission denied:', err);
+                toast.error('Please allow microphone access to use voice consultation');
+                setLoading(false);
+                return;
             }
-        });
-        vapi.on('speech-start', () => {
-            console.log('Assistant started speaking');
-            setCurrentSpeakerRole('assistant');
-        });
-        vapi.on('speech-end', () => {
-            console.log('Assistant stopped speaking');
-            setCurrentSpeakerRole('user');
-        });
+
+            // Analyze image first
+            const imageAnalysis = await analyzeImageBeforeCall();
+
+            const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
+            setVapiInstance(vapi);
+
+            // Add ALL event listeners BEFORE starting the call
+            vapi.on('error', (error) => {
+                console.error('Vapi error:', error);
+                toast.error(`Voice assistant error: ${error.message || 'Unknown error'}`);
+            });
+
+            vapi.on('call-start', () => {
+                console.log('Call started successfully');
+                setCallStarted(true);
+
+                // // Send image analysis after call starts
+                // if (imageAnalysis && vapi.send) {
+                //     setTimeout(() => {
+                //         console.log('Sending initial analysis...');
+                //         try {
+                //             vapi.send({
+                //                 type: "say" as const,
+                //                 message: `Based on my analysis of the medical image: ${imageAnalysis}. What specific aspects would you like to discuss?`
+                //             });
+                //             toast.info('Image analysis sent to AI');
+                //         } catch (error) {
+                //             console.error('Error sending image analysis:', error);
+                //         }
+                //     }, 2000);
+                // }
+            });
+
+            vapi.on('call-end', () => {
+                console.log('Call ended');
+                setCallStarted(false);
+            });
+
+            // FIXED: Use the correct vapi instance
+            vapi.on('speech-start', () => {
+                console.log('User started speaking');
+                setCurrentSpeakerRole('user');
+            });
+
+            vapi.on('speech-end', () => {
+                console.log('User stopped speaking');
+            });
+
+            // Add volume detection
+            vapi.on('volume-level', (volume) => {
+                // This helps debug if microphone is working
+                if (volume > 0) {
+                    console.log('Microphone detecting sound:', volume);
+                }
+            });
+
+            // Handle messages
+            vapi.on('message', (message) => {
+                console.log('Vapi message received:', message);
+
+                if (message.type === 'transcript') {
+                    const { role, transcriptType, transcript } = message;
+                    console.log(`Transcript [${transcriptType}] ${role}: ${transcript}`);
+
+                    if (transcriptType === 'partial') {
+                        setLiveTranscript(transcript);
+                        setCurrentSpeakerRole(role);
+                    } else if (transcriptType === 'final') {
+                        setMessages((prev: any) => [...prev, {
+                            role: role,
+                            text: transcript,
+                            inputType: 'voice'
+                        }]);
+                        setLiveTranscript("");
+                        setCurrentSpeakerRole(null);
+                    }
+                }
+
+                // Handle other message types
+                if (message.type === 'function-call') {
+                    console.log('Function call:', message);
+                }
+
+                if (message.type === 'conversation-update') {
+                    console.log('Conversation update:', message);
+                }
+            });
+
+            // Log all events for debugging
+            const debugEvents = ['error', 'call-start', 'call-end', 'speech-start',
+                'speech-end', 'volume-level', 'message', 'track'];
+
+            debugEvents.forEach(eventName => {
+                vapi.on(eventName as any, (data: any) => {
+                    console.log(`[VAPI EVENT] ${eventName}:`, data);
+                });
+            });
+
+            // Start the call AFTER all listeners are set up
+            console.log('Starting Vapi call with assistant ID:', process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
+            await vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
+
+        } catch (error) {
+            console.error('Error starting call:', error);
+            toast.error('Failed to start consultation');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const generateReport = async () => {
