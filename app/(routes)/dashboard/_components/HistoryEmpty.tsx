@@ -22,14 +22,15 @@ const DigitalStethoscope: React.FC<DigitalStethoscopeProps> = ({
             className={`medical-icon ${animated ? 'floating' : ''} ${className}`}
             xmlns="http://www.w3.org/2000/svg"
         >
+
             <defs>
                 <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#667eea', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#764ba2', stopOpacity: 1 }} />
+                    <stop offset="0%" style={{ stopColor: '#f7b9ea', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#83C1FB', stopOpacity: 1 }} />
                 </linearGradient>
                 <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#48bb78', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#38a169', stopOpacity: 1 }} />
+                    <stop offset="0%" style={{ stopColor: '#83C1FB', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#49a1f3ff', stopOpacity: 1 }} />
                 </linearGradient>
             </defs>
 
@@ -45,16 +46,16 @@ const DigitalStethoscope: React.FC<DigitalStethoscopeProps> = ({
                     r="90"
                     fill="none"
                     stroke="url(#grad1)"
-                    strokeWidth="1"
+                    strokeWidth="3"
                     opacity="0.3"
-                    strokeDasharray="5,5"
+                    strokeDasharray="4,5"
                 >
                     <animateTransform
                         attributeName="transform"
                         type="rotate"
                         from="0 100 100"
                         to="360 100 100"
-                        dur="30s"
+                        dur="50s"
                         repeatCount="indefinite"
                     />
                 </circle>
