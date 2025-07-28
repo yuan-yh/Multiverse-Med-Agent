@@ -104,14 +104,34 @@ IMPORTANT:
 export async function POST(req: NextRequest) {
     const { sessionId, sessionDetail, messages } = await req.json();
     console.log("---API AI Report Generation---");
+    console.log("Session ID:", sessionId);
+    console.log("Messages count:", messages?.length);
+    console.log("Has session detail:", !!sessionDetail);
 
     try {
-        const UserInput = "AI Doctor Agent Info: " + JSON.stringify(sessionDetail) + ", Conversation: " + JSON.stringify(messages);
+        // const UserInput = "AI Doctor Agent Info: " + JSON.stringify(sessionDetail) + ", Conversation: " + JSON.stringify(messages);
+        const formattedConversation = messages.map((msg: any) =>
+            `${msg.role === 'assistant' ? 'AI Doctor' : 'Patient'}: ${msg.text}`
+        ).join('\n');
+
+        const userInput = `
+AI Doctor Agent Info: 
+- Specialist: ${sessionDetail?.selectedDoctor?.specialist || 'General Physician'}
+- Patient Notes: ${sessionDetail?.notes || 'Not provided'}
+
+Conversation:
+${formattedConversation}
+
+Session ID: ${sessionId}
+`;
+        console.log("Sending to AI:", userInput);
+
+
         const completion = await openai.chat.completions.create({
             model: process.env.OPEN_ROUTER_MODEL || "",
             messages: [
                 { role: "system", content: REPORT_GEN_PROMPT },
-                { role: "user", content: UserInput }
+                { role: "user", content: userInput }
             ],
         });
         const rawContent = completion.choices[0].message.content;
