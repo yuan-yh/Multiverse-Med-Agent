@@ -89,8 +89,8 @@ function MedicalAgentCard({ mAgent }: props) {
                 {/* Call Button */}
                 <Button
                     className={`w-full transition-all duration-200 bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white ${isLocked
-                            ? 'opacity-50 cursor-not-allowed'
-                            : 'hover:shadow-md hover:-translate-y-0.5'
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'hover:shadow-md hover:-translate-y-0.5'
                         }`}
                     disabled={isLocked || loading}
                     onClick={handleCall}

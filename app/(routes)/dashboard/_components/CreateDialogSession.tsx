@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import axios from "axios";
-import { AlertCircleIcon, Loader2, Upload, X, FileImage } from "lucide-react";
+import { AlertCircleIcon, Loader2, Upload, X, FileImage, Loader2Icon } from "lucide-react";
 import { SuggestAgentCard } from "./SuggestAgentCard";
 import type { medicalAgent } from "./MedicalAgentCard";
 import { useRouter } from "next/navigation";
@@ -212,7 +212,28 @@ function CreateDialogSession() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className="mt-3" disabled={!premiumUser && historyList?.length >= 1}>+ Start a Consultation</Button>
+                {/* <Button className="mt-3" disabled={!premiumUser && historyList?.length >= 1}>+ Start a Consultation</Button> */}
+                <Button
+                    className={`mt-3 transition-all duration-200 bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white 
+                        hover:shadow-md hover:-translate-y-0.5`}
+                    disabled={!premiumUser && historyList?.length >= 1}
+                    onClick={handleCall}
+                    size="sm"
+                >
+                    <span className="flex items-center justify-center gap-2">
+                        {loading ? (
+                            <>
+                                <Loader2Icon className='w-4 h-4 animate-spin' />
+                                Connecting...
+                            </>
+                        ) : (
+                            <>
+                                Start Consultation
+                                <IconArrowRight className='w-4 h-4' />
+                            </>
+                        )}
+                    </span>
+                </Button>
             </DialogTrigger>
 
             {step === "input" && (

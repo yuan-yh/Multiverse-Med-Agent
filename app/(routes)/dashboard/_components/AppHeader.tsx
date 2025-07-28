@@ -133,7 +133,7 @@ function AppHeader() {
                             <div className="text-right hidden sm:block">
                                 <p className="text-sm font-medium text-gray-900">{isLoaded && user ? `Dr. ${user.lastName || user.username || 'User'}` : 'Loading...'}
                                 </p>
-                                <p className="text-xs text-gray-500">Oncologist</p>
+                                <p className="text-xs text-gray-500">Rural Clinic</p>
                             </div>
                             <UserButton
                                 afterSignOutUrl="/"
