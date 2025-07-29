@@ -279,7 +279,10 @@ function CreateDialogSession() {
                         <DialogClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DialogClose>
+
                         <Button
+                            className={`transition-all duration-200 bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white 
+                        hover:shadow-md hover:-translate-y-0.5`}
                             disabled={!note || !uploadedImage || loading}
                             onClick={handleDoctorSuggest}
                         >
@@ -319,7 +322,11 @@ function CreateDialogSession() {
                             <IconArrowLeft className="mr-1" />
                             Back
                         </Button>
-                        <Button disabled={loading || !selectedDoctor} onClick={handleCall}>
+                        <Button
+                            className={`transition-all duration-200 bg-gradient-to-r from-blue-300 to-blue-400 hover:from-blue-400 hover:to-blue-500 text-white 
+                        hover:shadow-md hover:-translate-y-0.5`}
+                            disabled={loading || !selectedDoctor}
+                            onClick={handleCall}>
                             Start
                             {loading ? <Loader2 className="animate-spin ml-2" /> : <IconArrowRight className="ml-2" />}
                         </Button>
