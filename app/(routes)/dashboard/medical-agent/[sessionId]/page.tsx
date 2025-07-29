@@ -474,7 +474,7 @@ function MedicalVoiceAgent() {
                                     Patient Background
                                 </h3>
                                 <div className='bg-blue-50 border border-blue-200 rounded-lg p-3 max-h-40 overflow-y-auto'>
-                                    <p className='text-sm text-gray-700'>{sessionDetail.notes}</p>
+                                    <p className='text-sm text-gray-700 whitespace-pre-wrap'>{sessionDetail.notes}</p>
                                 </div>
                             </div>
                         )}

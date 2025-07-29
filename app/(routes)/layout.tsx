@@ -20,7 +20,7 @@ function DashboardLayout({
             <AppHeader />
 
             {/* Main Content Area */}
-            <main className="relative pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+            <main className="relative pt-24 pb-0 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
                     {/* Optional: Add breadcrumbs or page title here */}
                     {/* <div className="mb-8">
