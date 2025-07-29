@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import AppHeader from './_components/AppHeader'
+import AppHeader from './dashboard/_components/AppHeader'
 
 function DashboardLayout({
     children,
@@ -41,14 +41,14 @@ function DashboardLayout({
             </main>
 
             {/* Optional: Floating Action Button for Quick Actions */}
-            <button className="fixed bottom-8 right-8 p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group">
+            {/* <button className="fixed bottom-8 right-8 p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                     New Analysis
                 </span>
-            </button>
+            </button> */}
 
             {/* Add custom styles for animations */}
             <style jsx global>{`
