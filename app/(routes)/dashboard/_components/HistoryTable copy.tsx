@@ -24,7 +24,7 @@ function HistoryTable({ historyList }: Props) {
                 <TableHeader>
                     <TableRow>
                         <TableHead>AI Medical Specialist</TableHead>
-                        <TableHead>Description</TableHead>
+                        <TableHead>Decription</TableHead>
                         <TableHead>Date</TableHead>
                         <TableHead className="text-right">Action</TableHead>
                     </TableRow>
@@ -32,10 +32,8 @@ function HistoryTable({ historyList }: Props) {
                 <TableBody>
                     {historyList.map((record: sessionDetail, index: number) => (
                         <TableRow key={index}>
-                            <TableCell className="font-medium">
-                                {record.selectedDoctor?.specialist || 'No specialist assigned'}
-                            </TableCell>
-                            <TableCell>{record.notes || '-'}</TableCell>
+                            <TableCell className="font-medium">{record.selectedDoctor.specialist}</TableCell>
+                            <TableCell>{record.notes}</TableCell>
                             <TableCell>{moment(new Date(record.createdOn)).fromNow()}</TableCell>
                             <TableCell className="text-right">
                                 <ViewReportDialog record={record} />
