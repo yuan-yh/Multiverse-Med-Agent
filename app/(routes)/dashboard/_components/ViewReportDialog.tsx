@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { FileText, Download, Eye } from 'lucide-react';
 import { sessionDetail } from '../medical-agent/[sessionId]/page';
+import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 
 type Props = {
