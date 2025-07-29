@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import AppHeader from './dashboard/_components/AppHeader'
+import AppHeader from './_components/AppHeader'
 
 function DashboardLayout({
     children,
