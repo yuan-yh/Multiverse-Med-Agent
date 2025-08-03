@@ -1,0 +1,41 @@
+I designed a medical agent used to assist doctors in rural areas to receive specialist-level radiologist advice for breast cancer. Now I plan to record a demo to use this tool. 
+
+Here is the scenario:
+
+A woman, with no breast cancer before nor family history in breast cancer, goes to rural doctor for her annually breast cancer check. After the rural doctor, who is not a radiological expert, received the woman's scanning, the doctor found the image could be suspicious, as there was a cloud in the scanning, which differs from normal breast scanning.
+
+As the rural doctors feel confusing about abnormality, this doctor had no knowledge to recognize nor oncological friends to call for help. Therefore, the rural doctor decided to seek advice from the agent tool I built.
+
+During this workflow, the rural doctor should upload image and provide basic patient information (should be short for demo purpose) as context, then speak or type to the agent tool. For the demo time length limit, the rural doctor can only give two prompts to the agent tool, which should be concise and clear.
+
+Based on the scenario above, please help design the patient information and two user prompts to better demonstrate this agent tool.
+
+(help me Ril)
+
+---
+Website demo (assist doctors for breast cancer diagnosis). Upload image & information, select a specialist and have conversation with report generate.
+
+---
+Scene 1:
+Today, Dr. Yuan, a rural doctor, finds a confusing breast screening image and turns to Ril for help.
+
+Scene 2:
+After she uploaded the image and basic patient info.
+
+Scene 3:
+Ril connects her with an AI-powered breast cancer specialist.
+
+Scene 4:
+With one click, the consultation begins.
+
+Scene 5:
+Dr. Yuan can use voice or text to communicate.
+
+Scene 6:
+After the consultation ends—
+
+Scene 7:
+She's redirected to the home page, where a medical report is ready.
+
+Scene 8:
+The report can be downloaded for future treatment reference.
